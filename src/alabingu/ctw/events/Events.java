@@ -90,7 +90,7 @@ public class Events implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {
         //LMU readability
-        String message=e.getMessage().toLowerCase();
+        String message = e.getMessage().toLowerCase();
         Player player = e.getPlayer();
 
         if (message.equals("/warfare start")) {
@@ -165,12 +165,14 @@ LMU: too complicated, too much copy/paste
 
         //Much more readable
         Player player = e.getPlayer();
-        String team=Teams.getTeam(e.getPlayer());
-        Location newPlace;
+        String team = Teams.getTeam(e.getPlayer());
+        final Location newPlace;
         if (team.equals("red")) {
             newPlace = lRed
         } else if (team.equals("blue")) {
             newPlace = lBlue;
+        } else {
+            return;
         }
 
         Game.giveKit(e.getPlayer(), team);
@@ -180,17 +182,19 @@ LMU: too complicated, too much copy/paste
                 player.teleport(newPlace); //LMU: this is readable!!
             }
         }.runTaskLater(plugin, 5L);
-
     }
 
     @EventHandler
     public void onChat(PlayerChatEvent e) {
-        if (Teams.getTeam(e.getPlayer()).equals("red")) {
-            e.setMessage(ChatColor.translateAlternateColorCodes('&', "&4[Rojo] &c" + e.getMessage()));
-        } else if (Teams.getTeam(e.getPlayer()).equals("blue")) {
-            e.setMessage(ChatColor.translateAlternateColorCodes('&', "&3[Azul] &b" + e.getMessage()));
-        } else if (Teams.getTeam(e.getPlayer()).equals("spectator")) {
-            e.setMessage(ChatColor.translateAlternateColorCodes('&', "&8[Espectador] &7" + e.getMessage()));
+        String team = Teams.getTeam(e.getPlayer());
+        String message = e.getMessage();
+
+        if (team.equals("red")) {
+            e.setMessage(ChatColor.translateAlternateColorCodes('&', "&4[Rojo] &c" + message));
+        } else if (team.equals("blue")) {
+            e.setMessage(ChatColor.translateAlternateColorCodes('&', "&3[Azul] &b" + message));
+        } else if (team.equals("spectator")) {
+            e.setMessage(ChatColor.translateAlternateColorCodes('&', "&8[Espectador] &7" + message));
         }
     }
 
