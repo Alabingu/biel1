@@ -122,9 +122,9 @@ public class Events implements Listener {
 
     @EventHandler
     public void OnDeath(PlayerDeathEvent e) {
-        if (Teams.getTeam(e.getEntity().getPlayer()).equals("red")) {
+        if (teamIsRed(Teams.getTeam(e.getEntity().getPlayer()))) {
             Teams.addKill("blue");
-        } else if (Teams.getTeam(e.getEntity().getPlayer()).equals("blue")) {
+        } else if (teamIsBlue(Teams.getTeam(e.getEntity().getPlayer()))) {
             Teams.addKill("red");
         }
     }
@@ -167,9 +167,9 @@ LMU: too complicated, too much copy/paste
         Player player = e.getPlayer();
         String team = Teams.getTeam(e.getPlayer());
         final Location newPlace;
-        if (team.equals("red")) {
+        if (teamIsRed(team)) {
             newPlace = lRed
-        } else if (team.equals("blue")) {
+        } else if (teamIsBlue(team)) {
             newPlace = lBlue;
         } else {
             return;
@@ -184,14 +184,22 @@ LMU: too complicated, too much copy/paste
         }.runTaskLater(plugin, 5L);
     }
 
+    private boolean teamIsBlue(String team) {
+        return team.equals("blue");
+    }
+
+    private boolean teamIsRed(String team) {
+        return team.equals("red");
+    }
+
     @EventHandler
     public void onChat(PlayerChatEvent e) {
         String team = Teams.getTeam(e.getPlayer());
         String message = e.getMessage();
 
-        if (team.equals("red")) {
+        if (teamIsRed(team)) {
             e.setMessage(ChatColor.translateAlternateColorCodes('&', "&4[Rojo] &c" + message));
-        } else if (team.equals("blue")) {
+        } else if (teamIsBlue(team)) {
             e.setMessage(ChatColor.translateAlternateColorCodes('&', "&3[Azul] &b" + message));
         } else if (team.equals("spectator")) {
             e.setMessage(ChatColor.translateAlternateColorCodes('&', "&8[Espectador] &7" + message));
@@ -208,7 +216,7 @@ LMU: too complicated, too much copy/paste
     }
 
     private boolean playerIsRed(Player p) {
-        return Teams.getTeam(p).equals("red");
+        return teamIsRed(Teams.getTeam(p));
     }
 
     private boolean blockIsBlue(Block b) {
@@ -221,7 +229,7 @@ LMU: too complicated, too much copy/paste
     }
 
     private boolean playerIsBlue(Player p) {
-        return Teams.getTeam(p).equals("blue");
+        return teamIsBlue(Teams.getTeam(p));
     }
 
     @EventHandler
