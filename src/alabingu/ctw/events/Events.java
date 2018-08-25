@@ -198,6 +198,32 @@ LMU: too complicated, too much copy/paste
         }
     }
 
+    private boolean blockIsRed(Block b) {
+        if ((b.getX() == -19 && b.getY() == 51 && b.getZ() == 36)
+            || (b.getX() == 19 && b.getY() == 51 && b.getZ() == 36)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean playerIsRed(Player p) {
+        return Teams.getTeam(p).equals("red");
+    }
+
+    private boolean blockIsBlue(Block b) {
+        if ((b.getX() == 19 && b.getY() == 51 && b.getZ() == -44)
+            || (b.getX() == -19 && b.getY() == 51 && b.getZ() == -44)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean playerIsBlue(Player p) {
+        return Teams.getTeam(p).equals("blue");
+    }
+
     @EventHandler
     public void BlockBreak(BlockBreakEvent e) {
         final ItemStack redWool = new ItemStack(Material.WOOL, 1);
@@ -207,76 +233,45 @@ LMU: too complicated, too much copy/paste
         //Too much copy/paste
         if (b.getType().equals(Material.WOOD)) {
             //What?!??!?!
-        } else if (b.getX() == -19 && b.getY() == 51 && b.getZ() == 36) {
-            if (Teams.getTeam(e.getPlayer()).equals("red")) {
-                e.setCancelled(true);
-                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&c¡Rompe la lana del equipo contrario en vez de la tuya por favor!"));
-            } else {
-                e.setCancelled(true);
-                b.setType(Material.AIR);
-                Teams.addWool("red", e.getPlayer());
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        b.setType(redWool.getType());
-                    }
-
-                }.runTaskLater(plugin, 100L);
-            }
-        } else if (b.getX() == 19 && b.getY() == 51 && b.getZ() == 36) {
-            if (Teams.getTeam(e.getPlayer()).equals("red")) {
-                e.setCancelled(true);
-                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&c¡Rompe la lana del equipo contrario en vez de la tuya por favor!"));
-            } else {
-                e.setCancelled(true);
-                b.setType(Material.AIR);
-                Teams.addWool("red", e.getPlayer());
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        b.setType(redWool.getType());
-                    }
-
-                }.runTaskLater(plugin, 100L);
-            }
-        } else if (b.getX() == 19 && b.getY() == 51 && b.getZ() == -44) {
-            if (Teams.getTeam(e.getPlayer()).equals("blue")) {
-                e.setCancelled(true);
-                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&c¡Rompe la lana del equipo contrario en vez de la tuya por favor!"));
-            } else {
-                e.setCancelled(true);
-                b.setType(Material.AIR);
-                Teams.addWool("blue", e.getPlayer());
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        b.setType(blueWool.getType());
-                    }
-
-                }.runTaskLater(plugin, 100L);
-            }
-        } else if (b.getX() == -19 && b.getY() == 51 && b.getZ() == -44) {
-            if (Teams.getTeam(e.getPlayer()).equals("blue")) {
-                e.setCancelled(true);
-                e.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&c¡Rompe la lana del equipo contrario en vez de la tuya por favor!"));
-            } else {
-                e.setCancelled(true);
-                b.setType(Material.AIR);
-                Teams.addWool("blue", e.getPlayer());
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        b.setType(blueWool.getType());
-                    }
-
-                }.runTaskLater(plugin, 100L);
-            }
         } else {
-            e.setCancelled(true);
+            Player player = e.getPlayer();
+            if (blockIsRed(b)) {
+                if (playerIsRed(player)) {
+                    e.setCancelled(true);
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c¡Rompe la lana del equipo contrario en vez de la tuya por favor!"));
+                } else {
+                    e.setCancelled(true);
+                    b.setType(Material.AIR);
+                    Teams.addWool("red", player);
+                    new BukkitRunnable() {
+
+                        @Override
+                        public void run() {
+                            b.setType(redWool.getType());
+                        }
+
+                    }.runTaskLater(plugin, 100L);
+                }
+            } else if (blockIsBlue(b)) {
+                if (playerIsBlue(player)) {
+                    e.setCancelled(true);
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c¡Rompe la lana del equipo contrario en vez de la tuya por favor!"));
+                } else {
+                    e.setCancelled(true);
+                    b.setType(Material.AIR);
+                    Teams.addWool("blue", player);
+                    new BukkitRunnable() {
+
+                        @Override
+                        public void run() {
+                            b.setType(blueWool.getType());
+                        }
+
+                    }.runTaskLater(plugin, 100L);
+                }
+            } else {
+                e.setCancelled(true);
+            }
         }
     }
 
