@@ -25,10 +25,31 @@ import alabingu.ctw.CTW;
 import alabingu.ctw.Game;
 import alabingu.ctw.Teams;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @SuppressWarnings("deprecation")
 public class Events implements Listener {
 
     private static JavaPlugin plugin = JavaPlugin.getProvidingPlugin(CTW.class);
+    Map<String, List<ItemStack>> deadVIPBelongings= new HashMap<>();
+
+    boolean isVIP(Player p) {
+//        throw new RuntimeException("Not implemented");
+        return true; //TODO implement later
+    }
+
+    private void saveVIPBelongings(PlayerDeathEvent e, Player deadMan) {
+        deadVIPBelongings.put(deadMan.getName(),e.getDrops());
+    }
+
+    private void restoreVIPBelongings(Player reborn) {
+        String name = reborn.getName();
+        if (deadVIPBelongings.containsKey(name)) {
+            reborn.getInventory().addItem((ItemStack[]) deadVIPBelongings.get(name).toArray());
+        }
+    }
 
     public static void restore() {
         Game.gottaRestore = true;
@@ -49,6 +70,15 @@ public class Events implements Listener {
         Teams.setTeam(p, "spectator");
         Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "vanish " + e.getPlayer() + " disable");
 
+    }
+
+
+    @EventHandler
+    public void onDie(PlayerDeathEvent e) {
+        Player deadMan = e.getEntity();
+        if (isVIP(deadMan)) {
+            saveVIPBelongings(e, deadMan);
+        }
     }
 
     @EventHandler
@@ -119,24 +149,28 @@ public class Events implements Listener {
     public void OnRespawn(final PlayerRespawnEvent e) {
         final Location lRed = new Location(Bukkit.getWorld("Warfare"), 0.5, 51.1, 36.5, 180, 0);
         final Location lBlue = new Location(Bukkit.getWorld("Warfare"), 0.5, 51.1, -43.5, 0, 0);
-        if (Teams.getTeamColor(e.getPlayer()).equals("red")) {
-            Game.giveKit(e.getPlayer(), "red");
+        final Player reborn = e.getPlayer();
+        if (isVIP(reborn)) {
+            restoreVIPBelongings(reborn);
+        }
+        if (Teams.getTeamColor(reborn).equals("red")) {
+            Game.giveKit(reborn, "red");
             new BukkitRunnable() {
 
                 @Override
                 public void run() {
-                    e.getPlayer().teleport(lRed);
+                    reborn.teleport(lRed);
                 }
 
             }.runTaskLater(plugin, 5L);
 
-        } else if (Teams.getTeamColor(e.getPlayer()).equals("blue")) {
-            Game.giveKit(e.getPlayer(), "blue");
+        } else if (Teams.getTeamColor(reborn).equals("blue")) {
+            Game.giveKit(reborn, "blue");
             new BukkitRunnable() {
 
                 @Override
                 public void run() {
-                    e.getPlayer().teleport(lBlue);
+                    reborn.teleport(lBlue);
                 }
 
             }.runTaskLater(plugin, 5L);
@@ -176,6 +210,7 @@ public class Events implements Listener {
         }
 
     }
+
 
     @EventHandler
     public void BlockBreak(BlockBreakEvent e) {
