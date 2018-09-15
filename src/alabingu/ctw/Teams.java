@@ -23,7 +23,7 @@ public class Teams {
 		blueWools.add(0);
 	}
 	
-	public static String getTeam(Player p) {
+	public static String getTeamColor(Player p) {
 		if(red.contains(p)) {
 			return "red";
 		} else if(blue.contains(p)) {

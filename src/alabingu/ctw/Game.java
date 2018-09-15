@@ -160,9 +160,9 @@ public class Game {
 			public void run() {
 				Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&b¡Ya!"));
 				for(final Player p : Bukkit.getOnlinePlayers()) {
-					if(Teams.getTeam(p).equals("red")) {
+					if(Teams.getTeamColor(p).equals("red")) {
 						p.teleport(lRed);
-					} else if(Teams.getTeam(p).equals("blue")) {
+					} else if(Teams.getTeamColor(p).equals("blue")) {
 						p.teleport(lBlue);
 					} else {
 						Teams.setTeam(p, CTW.lastJoinToTeam);
@@ -173,7 +173,7 @@ public class Game {
 							CTW.lastJoinToTeam = "red";
 						}
 						
-						if(Teams.getTeam(p).equals("red")) {
+						if(Teams.getTeamColor(p).equals("red")) {
 							p.teleport(lRed);
 						} else {
 							p.teleport(lBlue);
